@@ -12,14 +12,14 @@ class Model{
   late PostgreSql connection;
 
   Future<List<dynamic>> query(String sql,String tableName) async{
-    late List<dynamic> list;
+    late List<dynamic> list =[];
     try {
       var connect = connection.connect();
       await connect.open();
       await connect
           .query(sql)
-          .then((value) {
-            list = value.first;
+          .then((value) async {
+            list = await value;
       })
           .catchError((err) => err)
           .whenComplete(() => connect.close());
@@ -27,6 +27,7 @@ class Model{
       print(e.toString());
     }
     return list;
+
   }
 
   Future<void> createTable() async {
@@ -45,8 +46,9 @@ class Model{
   }
   Future<List<dynamic>> get({required int id}) async {
     String getSql = Query.get(this.tableName, id);
-    var result = await query(getSql, this.tableName);
-    return result;
+   var result =  await query(getSql, this.tableName);
+   return result;
+
   }
 
   Future<void> delete({required int id}) async {
