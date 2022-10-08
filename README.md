@@ -15,13 +15,20 @@ paketi yuklemek ucun github url'ni pubspec.yaml elave edilmelidir.
 
 ## Istifade
 
-```import 'package:postgres_orm/orm/model_dao/users.dart';
-import 'package:postgres_orm/orm/utils.dart';
+```import 'package:postgres_orm/orm/model_dao/category.dart';
+import 'package:postgres_orm/orm/transaction.dart';
 
 import 'colums.dart';
 import 'database_connection.dart';
 import 'model.dart';
-PostgreSql connection = PostgreSql(host: "127.0.0.1",port: 5432,database: "xx",username: "xx",password: "xxx");
+
+import 'model_dao/product.dart';
+import 'model_dao/users.dart';
+import 'query.dart';
+import 'utils.dart';
+
+
+PostgreSql connection = PostgreSql(host: "127.0.0.1",port: 5432,database: "xx",username: "xx",password: "XXXxxx");
 
 class Users extends Model {
   String tableName = "users";
@@ -72,34 +79,53 @@ class Product extends Model {
 }
 
 main() async {
-    Users user = new Users();
-    //await user.createTable();
+    Users user =  Users();
+    await user.createTable();
     Category category = Category();
-    //await category.createTable();
+    await category.createTable();
     Product product = Product();
-    //await product.createTable();
+    await product.createTable();
     
-  //  await user.insert(["qewq","cerkez","alisan"]);
+   await user.insert(["qewq","cerkez","alisan"]);
 
-  //user.createClass();
-  //category.createClass();
-  //product.createClass();
+  user.createClass();
+  category.createClass();
+  product.createClass();
 
-  //UsersDAO alisan = UsersDAO(id: 1, username: "userAlisan", first_name: "alisan", last_name: "cerkez");
-  //CategoryDAO cat = CategoryDAO(id: 1, name: "kitab");
+  UsersDAO alisan = UsersDAO(username: "userAlisan", first_name: "alisan", last_name: "cerkez");
+  CategoryDAO cat = CategoryDAO( name: "kitab");
 
-  //ProductDAO prod = ProductDAO(id: 1,product_name: "java",price: 14.5,category: 1,user_id: 1);
+  ProductDAO prod = ProductDAO(product_name: "java",price: 14.5,category: 1,user_id: 1);
 
-  //product.insert(prod.userToList());
-  //Utils u = new Utils();
-  //print(u.isCreatedDirectory().then((value) => print(value)));
+  product.insert(prod.modelToList());
+  Utils u = new Utils();
+  print(u.isCreatedDirectory().then((value) => print(value)));
 
 
-  UsersDAO ferid = new UsersDAO(username: "Ferid123", first_name: "ferid", last_name: "Necefov");
+  UsersDAO ferid = new UsersDAO(username: "araz", first_name: "ferid", last_name: "Necefov");
+  
+  await user.insert(ferid.modelToList());
+  await user.delete(id: 10);
+  print(user.selectAll());
+  print(Query.insert(ferid.modelToList(), user.tableName, user.columns));
 
-  user.insert(ferid.modelToList());
+     Acid.transaction(connection, (var ctx) async{
+
+      CategoryDAO kitab = CategoryDAO(name: "kitab");
+      await ctx.query(Query.insert(kitab.modelToList(), category.tableName, category.columns));
+  });
+
+
+
+   var x = await user.get(id: 1).then((value) => value);
+  UsersDAO use = UsersDAO.fromList(x);
+  print(use.id);
+  print(use.id);
+
+  var xc = await category.get(id: 1).then((value) => value);
+  CategoryDAO yc = CategoryDAO.fromList(xc);
+  print(yc.name);
 }
-
 
 ```
 
