@@ -44,6 +44,11 @@ class Model{
     query(insertSql, this.tableName);
   }
 
+  Future<void> update(List<dynamic> update,int id) async {
+    String updateSql = Query.update(id,update, this.tableName, this.columns);
+    query(updateSql, this.tableName);
+  }
+
   Future<void> selectAll([String orderBy = "ASC"]) async {
     String selectAll = Query.selectAll(this.tableName, orderBy);
     query(selectAll, this.tableName);
