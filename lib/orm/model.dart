@@ -19,9 +19,13 @@ class Model{
       await connect
           .query(sql)
           .then((value) async {
-            list = await value;
+        list = await value;
       })
-          .catchError((err) => err)
+          .catchError((err) {
+        print(err.toString());
+        return list;
+      }
+      )
           .whenComplete(() => connect.close());
     } catch (e) {
       print(e.toString());
@@ -46,8 +50,8 @@ class Model{
   }
   Future<List<dynamic>> get({required int id}) async {
     String getSql = Query.get(this.tableName, id);
-   var result =  await query(getSql, this.tableName);
-   return result;
+    var result =  await query(getSql, this.tableName);
+    return result;
 
   }
 
@@ -76,7 +80,7 @@ class Model{
     });
 
     Future<File> clasFile =
-        File("model_dao/${this.tableName}.dart").create(recursive: true);
+    File("model_dao/${this.tableName}.dart").create(recursive: true);
     await clasFile.then((value) {
       String contents = """
         class ${this.tableName.capitalize()}DAO{\n
